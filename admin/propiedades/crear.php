@@ -94,7 +94,7 @@
 
         //validar img por tamaño
         //convertir bytes a kb
-        $medida = 1000 * 100;
+        $medida = 1000 * 1000;
         if($imagen['size'] > $medida){
             $errores[] = 'La imagen cargada es demasiado pesada';
         }
@@ -108,17 +108,34 @@
         //Revisar que el arreglo de errores está vacío
         //Si está vacio es que no hay errores y se puede hacer la insercion sin problemas
         if(empty($errores)){
+
+            /* SUBIDA DE ARCHIVOS */
+
+            /* CREAR CARPETA */
+            $carpetaImagenes = '../../imagenes/';
+
+            if (!is_dir($carpetaImagenes)) {
+                mkdir($carpetaImagenes);
+            }
+
+            //Generar nombre unico de imagen
+            $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+
+            /* SUBIR LA IMAGEN */
+            move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
+
             //INSERTAR EN LA BD
             $query = "INSERT INTO propiedades (
             titulo, 
             precio, 
+            imagen,
             descripcion, 
             habitaciones, 
             wc, 
             estacionamiento, 
             creado,
             vendedores_id)
-            VALUES ('$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
+            VALUES ('$titulo', '$precio', '$nombreImagen', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
 
             //echo $query;
 
